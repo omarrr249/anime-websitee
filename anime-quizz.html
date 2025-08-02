@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة فكر للأنمي </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF5722;
+            --secondary: #607D8B;
+            --dark: #263238;
+            --light: #ECEFF1;
+            --easy: #4CAF50;
+            --medium: #FFC107;
+            --hard: #F44336;
+            --team1: #2196F3;
+            --team2: #9C27B0;
+        }
+        
+        * {
+            font-family: 'Tajawal', sans-serif;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark) 0%, #37474F 100%);
+            color: white;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .game-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        header {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+        }
+        
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin: 0;
+        }
+        
+        .game-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .game-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .game-options {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .game-option {
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid var(--primary);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .game-option:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 87, 34, 0.4);
+        }
+        
+        .game-option.used {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .category {
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .category-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid;
+        }
+        
+        .easy .category-title {
+            color: var(--easy);
+            border-color: var(--easy);
+        }
+        
+        .medium .category-title {
+            color: var(--medium);
+            border-color: var(--medium);
+        }
+        
+        .hard .category-title {
+            color: var(--hard);
+            border-color: var(--hard);
+        }
+        
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .question-value {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: none;
+            padding: 10px;
+            margin: 0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .easy .question-value {
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid var(--easy);
+        }
+        
+        .medium .question-value {
+            background: rgba(255, 193, 7, 0.2);
+            border: 2px solid var(--medium);
+        }
+        
+        .hard .question-value {
+            background: rgba(244, 67, 54, 0.2);
+            border: 2px solid var(--hard);
+        }
+        
+        .question-value:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .question-value.used {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .question-display {
+            background: rgba(0,0,0,0.7);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .question-text {
+            font-size: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .question-image {
+            max-width: 300px;
+            max-height: 200px;
+            margin: 15px auto;
+            display: block;
+            border-radius: 10px;
+        }
+        
+        .question-category {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .question-category.easy {
+            background: var(--easy);
+        }
+        
+        .question-category.medium {
+            background: var(--medium);
+        }
+        
+        .question-category.hard {
+            background: var(--hard);
+        }
+        
+        .teams-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        
+        .team {
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            padding: 20px;
+            width: 45%;
+            position: relative;
+        }
+        
+        .team1 {
+            border: 3px solid var(--team1);
+        }
+        
+        .team2 {
+            border: 3px solid var(--team2);
+        }
+        
+        .team-name {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .team1 .team-name {
+            color: var(--team1);
+        }
+        
+        .team2 .team-name {
+            color: var(--team2);
+        }
+        
+        .team-score {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .team1 .team-score {
+            color: var(--team1);
+        }
+        
+        .team2 .team-score {
+            color: var(--team2);
+        }
+        
+        .team-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .team-btn {
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .team1 .team-btn {
+            background: var(--team1);
+        }
+        
+        .team2 .team-btn {
+            background: var(--team2);
+        }
+        
+        .team-btn:hover {
+            opacity: 0.8;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .control-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 87, 34, 0.4);
+        }
+        
+        .answer-display {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            font-size: 1.2rem;
+            display: none;
+        }
+        
+        .current-team {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 5px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .image-question {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1><i class="fas fa-brain"></i> لعبة فكر للأنمي </h1>
+            <p>اختبار معرفتك العميقة بالأنمي بين فريقين!</p>
+        </header>
+        
+        <div class="game-options" id="game-options">
+            <div class="game-option" onclick="startGame(1)">لعبة رقم (1)</div>
+            <div class="game-option" onclick="startGame(2)">لعبة رقم (2)</div>
+            <div class="game-option" onclick="startGame(3)">لعبة رقم (3)</div>
+            <div class="game-option" onclick="startGame(4)">لعبة رقم (4)</div>
+            <div class="game-option" onclick="startGame(5)">لعبة رقم (5)</div>
+            <div class="game-option" onclick="startGame(6)">لعبة رقم (6)</div>
+            <div class="game-option" onclick="startGame(7)">لعبة رقم (7)</div>
+        </div>
+        
+        <div class="game-board" id="game-board" style="display: none;">
+            <!-- سيتم ملؤها بالجافاسكريبت -->
+        </div>
+        
+        <div class="question-display" id="question-display">
+            <div class="question-text">اختر لعبة من الخيارات أعلاه</div>
+        </div>
+        
+        <div class="answer-display" id="answer-display"></div>
+        
+        <div class="teams-container">
+            <div class="team team1">
+                <div class="team-name">الفريق الأول</div>
+                <div class="team-score" id="team1-score">0</div>
+                <div class="team-controls">
+                    <button class="team-btn" onclick="addScore(1, 1)">+1</button>
+                    <button class="team-btn" onclick="addScore(1, -1)">-1</button>
+                </div>
+            </div>
+            
+            <div class="team team2">
+                <div class="team-name">الفريق الثاني</div>
+                <div class="team-score" id="team2-score">0</div>
+                <div class="team-controls">
+                    <button class="team-btn" onclick="addScore(2, 1)">+1</button>
+                    <button class="team-btn" onclick="addScore(2, -1)">-1</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" id="show-answer-btn" onclick="showAnswer()" disabled>إظهار الإجابة</button>
+            <button class="control-btn" id="next-question-btn" onclick="nextQuestion()" disabled>السؤال التالي</button>
+            <button class="control-btn" onclick="resetGame()">إعادة اللعبة</button>
+        </div>
+    </div>
+
+    <script>
+        // قاعدة بيانات الأسئلة (7 مجموعات مختلفة)
+        const allGames = [
+            // مجموعة الأسئلة 1
+            {
+                easy: [
+                    { question: "ما اسم هذه الشخصية؟", image: "levii.jpg", answer: "ليفاي أكرمان (هجوم العمالقة)" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "luffy_gear5.jpg", answer: "ون بيس (غير 5)" },
+                    { question: "ما اسم هذا الأرك من أنمي Hunter x Hunter؟", image: "chimera_ant.jpg", answer: "أرك النمل الكيميرا" },
+                    { question: "من هو مؤلف أنمي Death Note؟", answer: "تسوغومي أوبا" },
+                    { question: "ما اسم تقنية ناروتو التي تجمع طاقة الطبيعة؟", answer: " حالة الحكيم "  },
+                    { question: "في أنمي Fullmetal Alchemist، ما هو اسم قانون المكافئة؟", answer: "لكي تكتسب شيئاً، يجب أن تخسر شيئاً مساوياً له" },
+                    { question: "ما اسم السيف الأسطوري في أنمي Berserk؟", answer: "سيف التنين" },
+                    { question: "ماهو اسم عرق بيكولو في دراغون بول؟", answer: "ناميك " },
+                    { question: "في أنمي Code Geass، ما هو اسم قوة ليولوش؟", answer: " (Geass)" }
+                ],
+                medium: [
+                    { question: "ما اسم هذه الشخصية من أنمي JoJo's Bizarre Adventure؟", image: "dio.jpg", answer: "ديو براندو" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "eren_transform.jpg", answer: "هجوم العمالقة (تحول إيرين الأول)" },
+                    { question: "ما اسم هذا الأرك من أنمي One Piece؟", image: "marineford.jpg", answer: "أرك مارينفورد" },
+                    { question: " ماهو رقم بطاقة غون في Hunter x Hunter؟", answer: "405" },
+                    { question: "في أنمي Steins;Gate، ما هو رقم الخط العالمي الذي يؤدي إلى نهاية العالم؟", answer: "1.048596" },
+                    { question: "ما اسم تقنية Goku التي تجمع طاقة الكي؟", answer: "Genki Dama" },
+                    { question: "في أنمي Neon Genesis Evangelion، ما هو اسم الوحدة 01؟", answer: "إيفا-01" },
+                    { question: "من هو مؤلف مانغا Vagabond؟", answer: "تاكيشي إنوي" },
+                    { question: "في أنمي Monster، ما هو اسم الطبيب الرئيسي؟", answer: "كينزو تينما" }
+                ],
+                hard: [
+                    { question: "ما اسم هذه الشخصية من أنمي Legend of the Galactic Heroes؟", image: "reinhard.jpg", answer: "راينهارد فون لونغغرام" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "spike_fall.jpg", answer: "Cowboy Bebop (الحلقة الأخيرة)" },
+                    { question: "ما اسم هذا الأرك من أنمي Monster؟", image: "johan_liebert.png", answer: "أرك يوهان ليبرت" },
+                    { question: "من هو مؤدي صوت Spike Spiegel في النسخة اليابانية؟", answer: "كويتشي ياماديرا" },
+                    { question: "في أنمي Ghost in the Shell، ما هو اسم الوحدة 9؟", answer: "القسم 9" },
+                    { question: "ما اسم السفينة الفضائية في أنمي Space Battleship Yamato؟", answer: "ياماتو" },
+                    { question: "في أنمي Serial Experiments Lain، ما هو اسم البروتوكول الذي تستخدمه لاين؟", answer: "بروتوكول ناف" },
+                    { question: "من هو مخرج أنمي Perfect Blue؟", answer: "ساتوشي كون" },
+                    { question: "في أنمي Mushishi، ما هو اسم الكائنات الغريبة؟", answer: "موشي" }
+                ]
+            },
+            // مجموعة الأسئلة 2
+            {
+                easy: [
+                    { question: "ما اسم هذه الشخصية؟", image: "light_yagami.jpg", answer: "لايت ياغامي (Death Note)" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "aot_rumbling.jpg", answer: "هجوم العمالقة (الدك)" },
+                    { question: "ما اسم هذا الأرك من أنمي Naruto Shippuden؟", image: "pain_arc.jpg", answer: "أرك بيين" },
+                    { question: "من هو مؤلف أنمي Attack on Titan؟", answer: "هاجيمي إيساياما" },
+                    { question: "ما اسم تقنية ساسكي النهائية؟", answer: "تشيدوري" },
+                    { question: "في أنمي Demon Slayer، ما هو اسم تنفس تانجيرو؟", answer: "تنفس الماء" },
+                    { question: "ما رقم عضو الباروك الذي قاتل زورو في أنمي One Piece؟", answer: "1" },
+                    { question: "من هو مخرج أنمي Death Note؟", answer: "تيتسورو أراكي" },
+                    { question: "في أنمي My Hero Academia، ما هو اسم قوة ديكو؟", answer: "One For All" }
+                ],
+                medium: [
+                    { question: "ما اسم هذه الشخصية من أنمي Vinland Saga؟", image: "thorfinn.jpg", answer: "ثورفين" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "fmab_human_transmutation.jpg", answer: "Fullmetal Alchemist: Brotherhood (التحويل البشري)" },
+                    { question: "ما اسم هذا الأرك من أنمي Berserk؟", image: "eclipse.jpg", answer: "الكسوف" },
+                    { question: "من هو مؤدي صوت Guts في النسخة اليابانية؟", answer: "هيرويوكي سانادا" },
+                    { question: "في أنمي Psycho-Pass، ما هو اسم النظام الذي يراقب الجرائم؟", answer: "نظام سيبيل" },
+                    { question: "ما اسم تقنية Itachi التي تسبب وهم لا ينتهي؟", answer: "تسوكويومي" },
+                    { question: "في أنمي Fate/Zero، ما هو اسم خادم كيريتسوغو؟", answer: "سابير" },
+                    { question: "من هو مؤلف مانغا 20th Century Boys؟", answer: "ناوكي أوراساوا" },
+                    { question: "في أنمي Parasyte، ما هو اسم الكائنات الغريبة؟", answer: "الطفيليات" },
+                    { question: "ما اسم هذه الشخصية من أنمي Monster؟", image: "johan.jpg", answer: "يوهان ليبرت" },
+                ],
+                hard: [
+                    { question: "ما اسم تقنية Itachi التي تسبب وهم لا ينتهي؟", answer: "تسوكويومي" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "end_of_evangelion.jpg", answer: "The End of Evangelion" },
+                    { question: "ما اسم هذا الأرك من أنمي Legend of the Galactic Heroes؟", image: "logh_battle.jpg", answer: "معركة أستارت" },
+                    { question: "من هو مؤدي صوت Reinhard في النسخة اليابانية؟", answer: "ريو هوريكاوا" },
+                    { question: "في أنمي Texhnolyze، ما هو اسم المدينة تحت الأرض؟", answer: "لوكس" },
+                    { question: "ما اسم السفينة في أنمي Space Dandy؟", answer: "الونر Aloha Oe" },
+                    { question: "في أنمي Haibane Renmei، ما هو اسم المدينة المسورة؟", answer: "غلي" },
+                    { question: "من هو مخرج أنمي Serial Experiments Lain؟", answer: "ريوتارو ناكامورا" },
+                    { question: "في أنمي Ergo Proxy، ما هو اسم العاملات الآليات؟", answer: "أوتوريف" }
+                ]
+            },
+            // مجموعة الأسئلة 3
+            {
+                easy: [
+                    { question: "ما اسم هذه الشخصية؟", image: "eren_yeager.jpg", answer: "إيرين ييغر (هجوم العمالقة)" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "luffy_vs_katakuri.jpg", answer: "ون بيس (مواجهة لوفي ضد كاتاكوري)" },
+                    { question: "ما اسم هذا الأرك من أنمي Demon Slayer؟", image: "mugen_train.jpg", answer: "أرك قطار اللانهاية" },
+                    { question: "من هو مؤلف أنمي One Piece؟", answer: "إييتشيرو أودا" },
+                    { question: "ما اسم تقنية Luffy الجديدة في Wano؟", answer: "غير 5" },
+                    { question: "في أنمي Jujutsu Kaisen، ما هو اسم تقنية Gojo؟", answer: "اللانهاية" },
+                    { question: "ما اسم السيف في أنمي Bleach؟", answer: "زانباكوتو" },
+                    { question: "من هو مخرج أنمي Fullmetal Alchemist: Brotherhood؟", answer: "ياسوهيرو إيري" },
+                    { question: "في أنمي Black Clover، ما هو اسم كتاب أستا؟", answer: "كتاب الوحوش الخماسية الأوراق" }
+                ],
+                medium: [
+                    { question: "ما اسم هذه الشخصية من أنمي Vagabond؟", image: "musashi.jpg", answer: "مياموتو موساشي" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "berserk_guts_vs_griffith.jpg", answer: "Berserk (مواجهة غاتس ضد غريفيث)" },
+                    { question: "ما اسم هذا الأرك من أنمي Vinland Saga؟", image: "vinland_prologue.jpg", answer: "برولوج فينلاند" },
+                    { question: "من هو مؤدي صوت Guts في Berserk 1997؟", answer: "نوبوتوشي كانا" },
+                    { question: "في أنمي Made in Abyss، ما هو اسم الحفرة؟", answer: "الهاوية" },
+                    { question: "ما اسم تقنية Thorfinn التي تعلمها من Askeladd؟", answer: "تكتيكات الفايكنج" },
+                    { question: "في أنمي Kingdom، ما هو اسم المملكة الرئيسية؟", answer: "تشين" },
+                    { question: "من هو مؤلف مانغا Berserk؟", answer: "كينتارو ميويرا" },
+                    { question: "في أنمي Golden Kamuy، ما هو اسم الكنز؟", answer: "ذهب الآينو" }
+                ],
+                hard: [
+                    { question: "ما اسم هذه الشخصية من أنمي Rose of Versailles؟", image: "oscar.jpg", answer: "أوسكار فرانسوا دي جارجيس" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "akira_bike.jpg", answer: "أكيرا" },
+                    { question: "ما اسم هذا الأرك من أنمي Rose of Versailles؟", image: "versailles_revolution.jpg", answer: "أرك الثورة الفرنسية" },
+                    { question: "من هو مؤدي صوت Tetsuo في Akira؟", answer: "تاتسويا ناكاداي" },
+                    { question: "في أنمي Revolutionary Girl Utena، ما هو اسم السيف؟", answer: "سيف دايوس" },
+                    { question: "ما اسم السفينة في أنمي Space Pirate Captain Harlock؟", answer: "أركاديا" },
+                    { question: "في أنمي The Tatami Galaxy، ما هو اسم النادي؟", answer: "نادي السيكي" },
+                    { question: "من هو مخرج أنمي Mind Game؟", answer: "مايكو يواسا" },
+                    { question: "في أنمي Kaiba، ما هو اسم الجهاز الذي يخزن الذكريات؟", answer: "الذاكرة" }
+                ]
+            },
+            // مجموعة الأسئلة 4
+            {
+                easy: [
+                    { question: "ما اسم هذه الشخصية؟", image: "gojo.jpg", answer: "ساتورو غوجو (Jujutsu Kaisen)" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "demon_slayer_nezuko.jpg", answer: "قاتل الشياطين (نيزوكو)" },
+                    { question: "ما اسم هذا الأرك من أنمي Bleach؟", image: "soul_society.jpg", answer: "أرك مجتمع الأرواح" },
+                    { question: "من هو مؤلف أنمي Jujutsu Kaisen؟", answer: "غيغي أكوتامي" },
+                    { question: "ما اسم تقنية Sukuna القوية؟", answer: "تقطيع العالم" },
+                    { question: "في أنمي Chainsaw Man، ما هو اسم الشيطان الذي يتعاقد معه دينجي؟", answer: "بوتشي" },
+                    { question: "ما اسم السيف في أنمي Demon Slayer؟", answer: "نيتشيرين" },
+                    { question: "من هو مخرج أنمي Demon Slayer؟", answer: "هاروو سوتوزوكي" },
+                    { question: "في أنمي Tokyo Revengers، ما هو اسم العصابة؟", answer: "تومان" }
+                ],
+                medium: [
+                    { question: "ما اسم هذه الشخصية من أنمي Vinland Saga؟", image: "askeladd.jpg", answer: "اشيلاد" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "hxh_gon_vs_pitou.jpg", answer: "Hunter x Hunter (مواجهة غون ضد بيتو)" },
+                    { question: "ما اسم هذا الأرك من أنمي Vinland Saga؟", image: "vinland_war.jpg", answer: "أرك الحرب" },
+                    { question: "من هو مؤدي صوت Askeladd في Vinland Saga؟", answer: "ناويا أوتشيكا" },
+                    { question: "في أنمي Pluto، ما هو اسم الروبوت الرئيسي؟", answer: "غيساخت" },
+                    { question: "ما اسم تقنية Gon التي تضحي بكل شيء؟", answer: "غون-سان" },
+                    { question: "في أنمي Monster، ما هو اسم المستشفى؟", answer: "آيسلر" },
+                    { question: "من هو مؤلف مانغا 20th Century Boys؟", answer: "ناوكي أوراساوا" },
+                    { question: "في أنمي Berserk، ما هو اسم العصابة؟", answer: "فرقة الصقر" }
+                ],
+                hard: [
+                    { question: "ما اسم هذه الشخصية من أنمي Legend of the Galactic Heroes؟", image: "yang_wenli.jpg", answer: "يانغ وينلي" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "ghost_in_the_shell.jpg", answer: "Ghost in the Shell" },
+                    { question: "ما اسم هذا الأرك من أنمي Monster؟", image: "johan_twins.jpg", answer: "أرك التوأم" },
+                    { question: "من هو مؤدي صوت Yang Wenli في النسخة اليابانية؟", answer: "كييتشي نانبا" },
+                    { question: "في أنمي Texhnolyze، ما هو اسم المادة المصنوعة؟", answer: "تيكزنولايز" },
+                    { question: "ما اسم السفينة في أنمي Galaxy Express 999؟", answer: "غالاكسي إكسبريس 999" },
+                    { question: "في أنمي Haibane Renmei، ما هو اسم الطائر؟", answer: "الغراب" },
+                    { question: "من هو مخرج أنمي Angel's Egg؟", answer: "مامورو أوشي" },
+                    { question: "في أنمي Ergo Proxy، ما هو اسم المدينة؟", answer: "رومدو" }
+                ]
+            },
+            // مجموعة الأسئلة 5
+            {
+                easy: [
+                    { question: "ما اسم هذه الشخصية؟", image: "luffyy.jpg", answer: "مونكي دي لوفي (ون بيس)" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "naruto_vs_sasuke.jpg", answer: "ناروتو (المواجهة النهائية)" },
+                    { question: "ما اسم هذا الأرك من أنمي Attack on Titan؟", image: "return_to_shiganshina.jpg", answer: "أرك العودة إلى شيجانشينا" },
+                    { question: "من هو مؤلف أنمي Demon Slayer؟", answer: "كويوهارو غوتوغي" },
+                    { question: "ما اسم تقنية Zoro الجديدة؟", answer: "كينج كونج غان" },
+                    { question: "في أنمي Black Clover، ما هو اسم قوة أستا؟", answer: "مضاد السحر" },
+                    { question: "ما اسم السيف في أنمي Sword Art Online؟", answer: "إليزيد" },
+                    { question: "من هو مخرج أنمي Attack on Titan؟", answer: "تيتسورو أراكي" },
+                    { question: "في أنمي My Hero Academia، ما هو اسم قوة أل مايت؟", answer: "One For All" }
+                ],
+                medium: [
+                    { question: "ما اسم هذه الشخصية من أنمي Berserk؟", image: "guts.jpg", answer: "غاتس" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "fmab_hughes.jpg", answer: "Fullmetal Alchemist: Brotherhood (موت هيوز)" },
+                    { question: "ما اسم هذا الأرك من أنمي Berserk؟", image: "golden_age.jpg", answer: "العصر الذهبي" },
+                    { question: "من هو مؤدي صوت Griffith في Berserk 1997؟", answer: "توشيوكي موريكاوا" },
+                    { question: "في أنمي Psycho-Pass، ما هو اسم المسدس؟", answer: "الدومينيتور" },
+                    { question: "ما اسم تقنية Guts التي تستخدم السيف الكبير؟", answer: "ضربة التنين" },
+                    { question: "في أنمي Fate/Zero، ما هو اسم خادم كيريتسوغو؟", answer: "سابير" },
+                    { question: "من هو مؤلف مانغا Vinland Saga؟", answer: "ماكوتو يوكيمورا" },
+                    { question: "في أنمي Parasyte، ما هو اسم الكائنات الغريبة؟", answer: "الطفيليات" }
+                ],
+                hard: [
+                    { question: "ما اسم هذه الشخصية من أنمي Monster؟", image: "tenma.jpg", answer: "كينزو تينما" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "end_of_evangelion.jpg", answer: "The End of Evangelion" },
+                    { question: "ما اسم هذا الأرك من أنمي Legend of the Galactic Heroes؟", image: "logh_battle.jpg", answer: "معركة أستارت" },
+                    { question: "من هو مؤدي صوت Reinhard في النسخة اليابانية؟", answer: "ريو هوريكاوا" },
+                    { question: "في أنمي Texhnolyze، ما هو اسم المدينة تحت الأرض؟", answer: "لوكس" },
+                    { question: "ما اسم السفينة في أنمي Space Dandy؟", answer: "الونر Aloha Oe" },
+                    { question: "في أنمي Haibane Renmei، ما هو اسم المدينة المسورة؟", answer: "غلي" },
+                    { question: "من هو مخرج أنمي Serial Experiments Lain؟", answer: "ريوتارو ناكامورا" },
+                    { question: "في أنمي Ergo Proxy، ما هو اسم العاملات الآليات؟", answer: "أوتوريف" }
+                ]
+            },
+            // مجموعة الأسئلة 6
+            {
+                easy: [
+                    { question: "ما اسم هذه الشخصية؟", image: "saitama.png", answer: "سايتاما (One Punch Man)" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "aot_levi_vs_beast.jpg", answer: "هجوم العمالقة (ليفاي ضد الوحش)" },
+                    { question: "ما اسم هذا الأرك من أنمي One Piece؟", image: "enies_lobby.jpg", answer: "أرك إنيس لوبي" },
+                    { question: "من هو مؤلف أنمي One Punch Man؟", answer: "ONE" },
+                    { question: "ما اسم تقنية Saitama القوية؟", answer: "اللكمة العادية" },
+                    { question: "في أنمي Mob Psycho 100، ما هو اسم قوة موب؟", answer: "التحريك الذهني" },
+                    { question: "ما اسم السيف في أنمي Rurouni Kenshin؟", answer: "ساكاباتو" },
+                    { question: "من هو مخرج أنمي One Punch Man؟", answer: "شينغو ناتسومي" },
+                    { question: "في أنمي JoJo's Bizarre Adventure، ما هو اسم قوة جوزيف؟", answer: "الهامون" }
+                ],
+                medium: [
+                    { question: "ما اسم هذه الشخصية من أنمي Vagabond؟", image: "musashi.jpg", answer: "مياموتو موساشي" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "berserk_guts_vs_griffith.jpg", answer: "Berserk (مواجهة غاتس ضد غريفيث)" },
+                    { question: "ما اسم هذا الأرك من أنمي Vinland Saga؟", image: "vinland_prologue.jpg", answer: "برولوج فينلاند" },
+                    { question: "من هو مؤدي صوت Guts في Berserk 1997؟", answer: "نوبوتوشي كانا" },
+                    { question: "في أنمي Made in Abyss، ما هو اسم الحفرة؟", answer: "الهاوية" },
+                    { question: "ما اسم تقنية Thorfinn التي تعلمها من Askeladd؟", answer: "تكتيكات الفايكنج" },
+                    { question: "في أنمي Kingdom، ما هو اسم المملكة الرئيسية؟", answer: "تشين" },
+                    { question: "من هو مؤلف مانغا Berserk؟", answer: "كينتارو ميويرا" },
+                    { question: "في أنمي Golden Kamuy، ما هو اسم الكنز؟", answer: "ذهب الآينو" }
+                ],
+                hard: [
+                    { question: "ما اسم هذه الشخصية من أنمي Rose of Versailles؟", image: "oscar.jpg", answer: "أوسكار فرانسوا دي جارجيس" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "akira_bike.jpg", answer: "أكيرا" },
+                    { question: "ما اسم هذا الأرك من أنمي Rose of Versailles؟", image: "versailles_revolution.jpg", answer: "أرك الثورة الفرنسية" },
+                    { question: "من هو مؤدي صوت Tetsuo في Akira؟", answer: "تاتسويا ناكاداي" },
+                    { question: "في أنمي Revolutionary Girl Utena، ما هو اسم السيف؟", answer: "سيف دايوس" },
+                    { question: "ما اسم السفينة في أنمي Space Pirate Captain Harlock؟", answer: "أركاديا" },
+                    { question: "في أنمي The Tatami Galaxy، ما هو اسم النادي؟", answer: "نادي السيكي" },
+                    { question: "من هو مخرج أنمي Mind Game؟", answer: "مايكو يواسا" },
+                    { question: "في أنمي Kaiba، ما هو اسم الجهاز الذي يخزن الذكريات؟", answer: "الذاكرة" }
+                ]
+            },
+            // مجموعة الأسئلة 7
+            {
+                easy: [
+                    { question: "ما اسم هذه الشخصية؟", image: "eren_yeager.jpg", answer: "إيرين ييغر (هجوم العمالقة)" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "luffy_vs_katakuri.jpg", answer: "ون بيس (مواجهة لوفي ضد كاتاكوري)" },
+                    { question: "ما اسم هذا الأرك من أنمي Demon Slayer؟", image: "mugen_train.jpg", answer: "أرك قطار اللانهاية" },
+                    { question: "من هو مؤلف أنمي One Piece؟", answer: "إييتشيرو أودا" },
+                    { question: "ما اسم تقنية Luffy الجديدة في Wano؟", answer: "غيار 5" },
+                    { question: "في أنمي Jujutsu Kaisen، ما هو اسم تقنية Gojo؟", answer: "اللانهاية" },
+                    { question: "ما اسم السيف في أنمي Bleach؟", answer: "زانباكوتو" },
+                    { question: "من هو مخرج أنمي Fullmetal Alchemist: Brotherhood؟", answer: "ياسوهيرو إيري" },
+                    { question: "في أنمي Black Clover، ما هو اسم كتاب أستا؟", answer: "كتاب الوحوش الخماسية الأوراق" }
+                ],
+                medium: [
+                    { question: "ما اسم هذه الشخصية من أنمي Vinland Saga؟", image: "askeladd.jpg", answer: "أسكلاد" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "hxh_gon_vs_pitou.jpg", answer: "Hunter x Hunter (مواجهة غون ضد بيتو)" },
+                    { question: "ما اسم هذا الأرك من أنمي Vinland Saga؟", image: "vinland_war.jpg", answer: "أرك الحرب" },
+                    { question: "من هو مؤدي صوت Askeladd في Vinland Saga؟", answer: "ناويا أوتشيكا" },
+                    { question: "في أنمي Pluto، ما هو اسم الروبوت الرئيسي؟", answer: "غيساخت" },
+                    { question: "ما اسم تقنية Gon التي تضحي بكل شيء؟", answer: "غون-سان" },
+                    { question: "في أنمي Monster، ما هو اسم المستشفى؟", answer: "آيسلر" },
+                    { question: "من هو مؤلف مانغا 20th Century Boys؟", answer: "ناوكي أوراساوا" },
+                    { question: "في أنمي Berserk، ما هو اسم العصابة؟", answer: "فرقة الصقر" }
+                ],
+                hard: [
+                    { question: "ما اسم هذه الشخصية من أنمي Legend of the Galactic Heroes؟", image: "yang_wenli.jpg", answer: "يانغ وينلي" },
+                    { question: "في أي أنمي ظهر هذا المشهد؟", image: "ghost_in_the_shell.jpg", answer: "Ghost in the Shell" },
+                    { question: "ما اسم هذا الأرك من أنمي Monster؟", image: "johan_twins.jpg", answer: "أرك التوأم" },
+                    { question: "من هو مؤدي صوت Yang Wenli في النسخة اليابانية؟", answer: "كييتشي نانبا" },
+                    { question: "في أنمي Texhnolyze، ما هو اسم المادة المصنوعة؟", answer: "تيكزنولايز" },
+                    { question: "ما اسم السفينة في أنمي Galaxy Express 999？", answer: "غالاكسي إكسبريس 999" },
+                    { question: "في أنمي Haibane Renmei، ما هو اسم الطائر؟", answer: "الغراب" },
+                    { question: "من هو مخرج أنمي Angel's Egg？", answer: "مامورو أوشي" },
+                    { question: "في أنمي Ergo Proxy， ما هو اسم المدينة？", answer: "رومدو" }
+                ]
+            }
+        ];
+
+        // متغيرات اللعبة
+        let currentGame = null;
+        let currentQuestion = null;
+        let currentCategory = null;
+        let currentValue = 0;
+        let team1Score = 0;
+        let team2Score = 0;
+        let currentTeam = 1;
+        let usedGames = [];
+        let questions = null;
+
+        // عناصر DOM
+        const gameOptions = document.getElementById('game-options');
+        const gameBoard = document.getElementById('game-board');
+        const questionDisplay = document.getElementById('question-display');
+        const questionText = questionDisplay.querySelector('.question-text');
+        const answerDisplay = document.getElementById('answer-display');
+        const team1ScoreElement = document.getElementById('team1-score');
+        const team2ScoreElement = document.getElementById('team2-score');
+        const showAnswerBtn = document.getElementById('show-answer-btn');
+        const nextQuestionBtn = document.getElementById('next-question-btn');
+
+        // بدء اللعبة
+        function startGame(gameIndex) {
+            if (usedGames.includes(gameIndex)) {
+                alert('لقد تم استخدام هذه اللعبة مسبقاً!');
+                return;
+            }
+            
+            currentGame = allGames[gameIndex - 1];
+            questions = JSON.parse(JSON.stringify(currentGame)); // نسخة من الأسئلة للاستخدام
+            usedGames.push(gameIndex);
+            
+            // تحديث أزرار الألعاب
+            updateGameOptions();
+            
+            // تهيئة لوحة اللعبة
+            initGameBoard();
+            
+            // إخفاء خيارات الألعاب وإظهار لوحة اللعبة
+            gameOptions.style.display = 'none';
+            gameBoard.style.display = 'grid';
+            
+            // تمييز اللعبة المختارة
+            const options = document.querySelectorAll('.game-option');
+            options[gameIndex - 1].classList.add('used');
+            
+            questionDisplay.innerHTML = '<div class="question-text">اختر سؤالاً من اللوحة أعلاه</div>';
+        }
+
+        // تحديث خيارات الألعاب
+        function updateGameOptions() {
+            const options = document.querySelectorAll('.game-option');
+            options.forEach((option, index) => {
+                if (usedGames.includes(index + 1)) {
+                    option.classList.add('used');
+                }
+            });
+        }
+
+        // تهيئة لوحة اللعبة
+        function initGameBoard() {
+            gameBoard.innerHTML = '';
+            
+            // إنشاء فئة الأسئلة السهلة (9 أسئلة × 200 نقطة)
+            createCategory('easy', 'أسئلة (200 نقطة)', 9, 200);
+            
+            // إنشاء فئة الأسئلة المتوسطة (9 أسئلة × 400 نقطة)
+            createCategory('medium', 'أسئلة (400 نقطة)', 9, 400);
+            
+            // إنشاء فئة الأسئلة الصعبة (9 أسئلة × 600 نقطة)
+            createCategory('hard', 'أسئلة (600 نقطة)', 9, 600);
+        }
+
+        // إنشاء فئة أسئلة
+        function createCategory(difficulty, title, count, value) {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.className = `category ${difficulty}`;
+            
+            const titleElement = document.createElement('div');
+            titleElement.className = 'category-title';
+            titleElement.textContent = title;
+            categoryDiv.appendChild(titleElement);
+            
+            // إضافة شبكة الأسئلة
+            const questionsGrid = document.createElement('div');
+            questionsGrid.className = 'questions-grid';
+            
+            // إضافة أسئلة الفئة
+            for (let i = 0; i < count; i++) {
+                const questionBtn = document.createElement('button');
+                questionBtn.className = `question-value ${difficulty}`;
+                questionBtn.textContent = value;
+                questionBtn.onclick = () => selectQuestion(difficulty, value);
+                questionsGrid.appendChild(questionBtn);
+            }
+            
+            categoryDiv.appendChild(questionsGrid);
+            gameBoard.appendChild(categoryDiv);
+        }
+
+        // اختيار سؤال
+        function selectQuestion(difficulty, value) {
+            // التحقق من وجود أسئلة متبقية
+            if (questions[difficulty].length === 0) {
+                alert('لا توجد أسئلة متبقية في هذه الفئة!');
+                return;
+            }
+            
+            // اختيار سؤال عشوائي
+            const randomIndex = Math.floor(Math.random() * questions[difficulty].length);
+            currentQuestion = questions[difficulty][randomIndex];
+            currentCategory = difficulty;
+            currentValue = value;
+            
+            // إزالة السؤال من القائمة لمنع التكرار
+            questions[difficulty].splice(randomIndex, 1);
+            
+            // عرض السؤال
+            if (currentQuestion.image) {
+                questionDisplay.innerHTML = `
+                    <div class="question-category ${difficulty}">${value} نقطة</div>
+                    <div class="image-question">
+                        <div class="question-text">${currentQuestion.question}</div>
+                        <img src="${currentQuestion.image}" class="question-image" alt="صورة السؤال">
+                    </div>
+                `;
+            } else {
+                questionDisplay.innerHTML = `
+                    <div class="question-category ${difficulty}">${value} نقطة</div>
+                    <div class="question-text">${currentQuestion.question}</div>
+                `;
+            }
+            
+            // تعطيل زر الإجابة وتمكين زر السؤال التالي
+            showAnswerBtn.disabled = false;
+            nextQuestionBtn.disabled = true;
+            answerDisplay.style.display = 'none';
+            
+            // تحديث الفريق الحالي
+            updateCurrentTeam();
+            
+            // تعطيل زر السؤال المستخدم
+            disableUsedQuestion(difficulty, value);
+        }
+
+        // تعطيل السؤال المستخدم
+        function disableUsedQuestion(difficulty, value) {
+            const buttons = document.querySelectorAll(`.${difficulty} .question-value`);
+            let found = false;
+            
+            buttons.forEach(button => {
+                if (!found && button.textContent == value && !button.classList.contains('used')) {
+                    button.classList.add('used');
+                    found = true;
+                }
+            });
+        }
+
+        // عرض الإجابة
+        function showAnswer() {
+            answerDisplay.textContent = `الإجابة: ${currentQuestion.answer}`;
+            answerDisplay.style.display = 'block';
+            showAnswerBtn.disabled = true;
+            nextQuestionBtn.disabled = false;
+        }
+
+        // الانتقال للسؤال التالي
+        function nextQuestion() {
+            questionDisplay.innerHTML = '<div class="question-text">اختر سؤالاً آخر من اللوحة أعلاه</div>';
+            answerDisplay.style.display = 'none';
+            showAnswerBtn.disabled = true;
+            nextQuestionBtn.disabled = true;
+            
+            // تبديل الفريق
+            currentTeam = currentTeam === 1 ? 2 : 1;
+            updateCurrentTeam();
+            
+            // التحقق من انتهاء الأسئلة
+            checkGameEnd();
+        }
+
+        // التحقق من انتهاء اللعبة
+        function checkGameEnd() {
+            const easyQuestionsLeft = document.querySelectorAll('.easy .question-value:not(.used)').length;
+            const mediumQuestionsLeft = document.querySelectorAll('.medium .question-value:not(.used)').length;
+            const hardQuestionsLeft = document.querySelectorAll('.hard .question-value:not(.used)').length;
+            
+            if (easyQuestionsLeft === 0 && mediumQuestionsLeft === 0 && hardQuestionsLeft === 0) {
+                setTimeout(() => {
+                    alert(`انتهت اللعبة!\nنتيجة الفريق الأول: ${team1Score}\nنتيجة الفريق الثاني: ${team2Score}`);
+                }, 500);
+            }
+        }
+
+        // إضافة نقاط للفريق
+        function addScore(team, points) {
+            if (team === 1) {
+                team1Score += points * currentValue;
+                team1ScoreElement.textContent = team1Score;
+            } else {
+                team2Score += points * currentValue;
+                team2ScoreElement.textContent = team2Score;
+            }
+        }
+
+        // تحديث عرض الفريق الحالي
+        function updateCurrentTeam() {
+            // إزالة أي مؤشرات سابقة
+            document.querySelectorAll('.current-team').forEach(el => el.remove());
+            
+            if (currentQuestion) {
+                const currentTeamElement = document.createElement('div');
+                currentTeamElement.className = 'current-team';
+                currentTeamElement.textContent = `الفريق ${currentTeam} - دورك الآن`;
+                
+                if (currentTeam === 1) {
+                    document.querySelector('.team1').appendChild(currentTeamElement);
+                } else {
+                    document.querySelector('.team2').appendChild(currentTeamElement);
+                }
+            }
+        }
+
+        // إعادة تعيين اللعبة
+        function resetGame() {
+            currentGame = null;
+            currentQuestion = null;
+            currentCategory = null;
+            currentValue = 0;
+            team1Score = 0;
+            team2Score = 0;
+            currentTeam = 1;
+            usedGames = [];
+            questions = null;
+            
+            team1ScoreElement.textContent = '0';
+            team2ScoreElement.textContent = '0';
+            questionDisplay.innerHTML = '<div class="question-text">اختر لعبة من الخيارات أعلاه</div>';
+            answerDisplay.style.display = 'none';
+            showAnswerBtn.disabled = true;
+            nextQuestionBtn.disabled = true;
+            
+            gameOptions.style.display = 'grid';
+            gameBoard.style.display = 'none';
+            updateGameOptions();
+            updateCurrentTeam();
+        }
+
+        // بدء اللعبة عند تحميل الصفحة
+        window.onload = function() {
+            updateCurrentTeam();
+        };
+    </script>
+</body>
+</html>
